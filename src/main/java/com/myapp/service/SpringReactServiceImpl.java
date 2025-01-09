@@ -1,5 +1,4 @@
 package com.myapp.service;
-
 import com.myapp.dto.PaginationResult;
 import com.myapp.dto.SpringReactDto;
 import com.myapp.dto.SpringReactResponse;
@@ -39,7 +38,8 @@ public class SpringReactServiceImpl implements SpringReactService{
         entity.setCreatedDate(currentDate);
         if(springReactDao.existsByEmailId(springReactDto.getEmailId())){
             log.error("Email Id already exists");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email Id already exists");
+           // return ResponseEntity.status(HttpStatus.OK).body("Email Id already exists");
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email Id already exists");
         }
         if(springReactDao.existsByMobile(springReactDto.getMobile())){
             log.error("Mobile already exists");
@@ -51,19 +51,20 @@ public class SpringReactServiceImpl implements SpringReactService{
     }
 
     @Override
-    public ResponseEntity<List<SpringReactResponse>> getAllUsers(int startIndex, int endIndex,LocalDate createDate) {
+    public ResponseEntity<PaginationResult> getAllUsers(int startIndex, int endIndex, LocalDate createDate) {
        // System.out.println("Page sizes startindex "+springReactDto.getStartIndex()+"endindex " +springReactDto.getEndIndex());
+        PaginationResult pagination = new PaginationResult();
         List<SpringReactResponse> reactResponse = new ArrayList<>();
      //   int pageSize = endIndex-startIndex;
         Pageable pageable = PageRequest.of(startIndex,endIndex);
 
-        //log.info("Page size"+springReactDto.getStartIndex(),springReactDto.getEndIndex());
+        log.info("Page size"+startIndex,endIndex);
         Page<SpringReactEntity> entity = springReactDao.findAllByCreatedDate(createDate,pageable);
 
         System.out.println("total size"+entity.getTotalElements());
         List<SpringReactResponse> responses = null;
         if(entity!=null && !entity.isEmpty()){
-            responses = entity.stream().map(resp->{
+            reactResponse = entity.stream().map(resp-> {
                 SpringReactResponse response = new SpringReactResponse();
                 response.setId(resp.getId());
                 response.setFirstName(resp.getFirstName());
@@ -73,7 +74,9 @@ public class SpringReactServiceImpl implements SpringReactService{
                 response.setCreatedDate(resp.getCreatedDate());
                 return response;
             }).collect(Collectors.toList());
-            return ResponseEntity.ok().body(responses);
+            pagination.setResponseList(reactResponse);
+            pagination.setTotalRecords(entity.getTotalElements());
+            return ResponseEntity.ok().body(pagination);
         }else{
             return ResponseEntity.noContent().build();
         }

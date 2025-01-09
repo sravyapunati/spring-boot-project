@@ -1,5 +1,6 @@
 package com.myapp.controller;
 
+import com.myapp.dto.PaginationResult;
 import com.myapp.dto.SpringReactDto;
 import com.myapp.dto.SpringReactResponse;
 import com.myapp.service.SpringReactService;
@@ -30,7 +31,7 @@ public class SpringReactController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<List<SpringReactResponse>> getAllUsers(@RequestParam LocalDate createdDate, @RequestParam int startIndex, @RequestParam int endIndex){
+    public ResponseEntity<PaginationResult> getAllUsers(@RequestParam LocalDate createdDate, @RequestParam int startIndex, @RequestParam int endIndex){
         log.debug("fetch users");
         return service.getAllUsers(startIndex,endIndex,createdDate);
     }
