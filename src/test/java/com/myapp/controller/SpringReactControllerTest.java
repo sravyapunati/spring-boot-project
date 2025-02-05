@@ -1,5 +1,6 @@
 package com.myapp.controller;
 
+import com.myapp.dto.PaginationResult;
 import com.myapp.dto.SpringReactDto;
 import com.myapp.dto.SpringReactResponse;
 import com.myapp.entity.SpringReactEntity;
@@ -23,6 +24,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 public class SpringReactControllerTest {
@@ -63,8 +65,10 @@ public class SpringReactControllerTest {
     void list_success(){
         List<SpringReactResponse> responseList = new ArrayList<>();
         LocalDate date = LocalDate.now();
-        when(springReactController.getAllUsers(date,0,10)).thenReturn(ResponseEntity.ok().body(responseList));
-        ResponseEntity<List<SpringReactResponse>> response = springReactController.getAllUsers(date,0,10);
+        PaginationResult paginationResult = new PaginationResult();
+        ResponseEntity<PaginationResult> mockResponse = ResponseEntity.ok(paginationResult); // Simulate success response
+        when(springReactController.getAllUsers(date,0,10)).thenReturn(mockResponse);
+        ResponseEntity<PaginationResult> response = springReactController.getAllUsers(date,0,10);
         assertEquals(200,response.getStatusCodeValue());
 
     }

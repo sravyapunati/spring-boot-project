@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -80,5 +81,41 @@ public class SpringReactServiceImpl implements SpringReactService{
         }else{
             return ResponseEntity.noContent().build();
         }
+    }
+
+    @Override
+    public ResponseEntity<SpringReactResponse> getUser(Long id) {
+        boolean isIdExists = springReactDao.existsById(id);
+        System.out.println("isIdExists-"+isIdExists);
+        if(isIdExists){
+            Optional<SpringReactEntity> entity = springReactDao.findById(id);
+            SpringReactResponse response = new SpringReactResponse();
+            response.setId(id);
+            response.setFirstName(entity.get().getFirstName());
+            response.setLastName(entity.get().getLastName());
+            response.setMobile(entity.get().getMobile());
+            response.setEmailId(entity.get().getEmailId());
+            response.setCreatedDate(entity.get().getCreatedDate());
+            return ResponseEntity.ok(response);
+        }else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> updateUsers(Long id,String firstName, String lastName) {
+       // SpringReactEntity entity = new SpringReactEntity();
+        Optional<SpringReactEntity> entity = springReactDao.findById(id);
+        if (entity.isPresent()){
+            entity.get().setFirstName(firstName);
+            entity.get().setId(id);
+            entity.get().setLastName(lastName);
+            entity.get().setUpdatedDate(LocalDate.now());
+            springReactDao.save(entity.get());
+            return ResponseEntity.status(HttpStatus.OK).body("Updated successfully");
+        }else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
     }
 }

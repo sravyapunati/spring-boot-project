@@ -98,9 +98,9 @@ public class SpringReactServiceImplTest {
         Pageable page = PageRequest.of(0,10);
         Page<SpringReactEntity> pageList = new PageImpl<>(entityList);
         when(springReactDao.findAllByCreatedDate(date,page)).thenReturn(pageList);
-        ResponseEntity<List<SpringReactResponse>> resp = springReactServiceImpl.getAllUsers(0,10,date);
+        ResponseEntity<PaginationResult> resp = springReactServiceImpl.getAllUsers(0,10,date);
         assertEquals(200,resp.getStatusCodeValue());
-        assertEquals(1,resp.getBody().size());
+        assertEquals(1,resp.getBody().getTotalRecords());
         assertNotNull(resp);
     }
 
@@ -111,7 +111,7 @@ public class SpringReactServiceImplTest {
         Pageable page = PageRequest.of(0,10);
         Page pageInfo = new PageImpl(entityList);
         when(springReactDao.findAllByCreatedDate(date,page)).thenReturn(pageInfo);
-        ResponseEntity<List<SpringReactResponse>> resp = springReactServiceImpl.getAllUsers(0,10,date);
+        ResponseEntity<PaginationResult> resp = springReactServiceImpl.getAllUsers(0,10,date);
         assertEquals(204,resp.getStatusCodeValue());
     }
 }

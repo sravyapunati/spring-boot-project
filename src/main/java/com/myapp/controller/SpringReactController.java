@@ -35,5 +35,17 @@ public class SpringReactController {
         log.debug("fetch users");
         return service.getAllUsers(startIndex,endIndex,createdDate);
     }
+
+    @GetMapping("/getUser/{id}")
+    public ResponseEntity<SpringReactResponse> getUser(@PathVariable Long id ){
+        log.debug("fetch user");
+        return service.getUser(id);
+    }
+     @PutMapping("/update/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable Long id,@RequestBody SpringReactDto dto){
+         log.debug("update user");
+         return service.updateUsers(id,dto.getFirstName(),dto.getLastName());
+     }
+
 }
 

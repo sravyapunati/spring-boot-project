@@ -10,7 +10,7 @@ uniqueConstraints = @UniqueConstraint(columnNames={"email_Id","mobile"}))
 // if @table is not mentioned it takes class name as table name converting to lowercase.
 public class SpringReactEntity {
     @Id
-    @Column(name ="Id")
+    @Column(name = "Id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -28,6 +28,9 @@ public class SpringReactEntity {
 
     @Column(name = "Created_Date")
     private LocalDate createdDate;
+
+    @Column(name = "Updated_Date")
+    private LocalDate updatedDate;
 
     public Long getId() {
         return id;
@@ -76,6 +79,15 @@ public class SpringReactEntity {
     public void setCreatedDate(LocalDate createdDate) {
         this.createdDate = createdDate;
     }
+
+    public LocalDate getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(LocalDate updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
 }
 //@Id
 //@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq_gen")
