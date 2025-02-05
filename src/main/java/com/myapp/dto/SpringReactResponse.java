@@ -16,6 +16,8 @@ public class SpringReactResponse {
 
     private LocalDate createdDate;
 
+    private String designation;
+
     public Long getId(){
         return  id;
     }
@@ -64,4 +66,11 @@ public class SpringReactResponse {
         this.createdDate = createdDate;
     }
 
+    public String getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
 }

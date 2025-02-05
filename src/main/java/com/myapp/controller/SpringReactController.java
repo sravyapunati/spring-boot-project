@@ -4,15 +4,12 @@ import com.myapp.dto.PaginationResult;
 import com.myapp.dto.SpringReactDto;
 import com.myapp.dto.SpringReactResponse;
 import com.myapp.service.SpringReactService;
-import com.myapp.service.SpringReactServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.util.List;
 @CrossOrigin("*")
 @RestController
 @RequestMapping(path = SpringReactController.BASEPATH, produces = "application/json")
@@ -31,9 +28,9 @@ public class SpringReactController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<PaginationResult> getAllUsers(@RequestParam LocalDate createdDate, @RequestParam int startIndex, @RequestParam int endIndex){
+    public ResponseEntity<PaginationResult> getAllUsers(@RequestParam int startIndex, @RequestParam int endIndex){
         log.debug("fetch users");
-        return service.getAllUsers(startIndex,endIndex,createdDate);
+        return service.getAllUsers(startIndex,endIndex);
     }
 
     @GetMapping("/getUser/{id}")
@@ -44,7 +41,7 @@ public class SpringReactController {
      @PutMapping("/update/{id}")
     public ResponseEntity<String> updateUser(@PathVariable Long id,@RequestBody SpringReactDto dto){
          log.debug("update user");
-         return service.updateUsers(id,dto.getFirstName(),dto.getLastName());
+         return service.updateUsers(id,dto.getFirstName(),dto.getLastName(), dto.getDesignation());
      }
 
 }

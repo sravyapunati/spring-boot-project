@@ -32,6 +32,9 @@ public class SpringReactEntity {
     @Column(name = "Updated_Date")
     private LocalDate updatedDate;
 
+    @Column(name = "Designation")
+    private String designation;
+
     public Long getId() {
         return id;
     }
@@ -88,6 +91,13 @@ public class SpringReactEntity {
         this.updatedDate = updatedDate;
     }
 
+    public String getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
 }
 //@Id
 //@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq_gen")

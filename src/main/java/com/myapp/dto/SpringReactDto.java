@@ -11,6 +11,8 @@ public class SpringReactDto {
 
     private String mobile;
 
+    private String designation;
+
     private int startIndex;
 
     private int endIndex;
@@ -53,6 +55,14 @@ public class SpringReactDto {
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
+    }
+
+    public String getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(String designation) {
+        this.designation = designation;
     }
 
     public int getEndIndex() {

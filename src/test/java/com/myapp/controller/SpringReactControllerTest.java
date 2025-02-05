@@ -4,10 +4,7 @@ import com.myapp.dto.PaginationResult;
 import com.myapp.dto.SpringReactDto;
 import com.myapp.dto.SpringReactResponse;
 import com.myapp.entity.SpringReactEntity;
-import com.myapp.repo.SpringReactDao;
 import com.myapp.service.SpringReactService;
-import com.myapp.service.SpringReactServiceImpl;
-import com.mysql.cj.log.LogFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,16 +12,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 public class SpringReactControllerTest {
@@ -67,10 +60,27 @@ public class SpringReactControllerTest {
         LocalDate date = LocalDate.now();
         PaginationResult paginationResult = new PaginationResult();
         ResponseEntity<PaginationResult> mockResponse = ResponseEntity.ok(paginationResult); // Simulate success response
-        when(springReactController.getAllUsers(date,0,10)).thenReturn(mockResponse);
-        ResponseEntity<PaginationResult> response = springReactController.getAllUsers(date,0,10);
+        when(springReactController.getAllUsers(0,10)).thenReturn(mockResponse);
+        ResponseEntity<PaginationResult> response = springReactController.getAllUsers(0,10);
         assertEquals(200,response.getStatusCodeValue());
 
+    }
+
+    @Test
+    void get_success(){
+        SpringReactResponse response = new SpringReactResponse();
+        ResponseEntity<SpringReactResponse> resp = ResponseEntity.ok(response);
+        when(springReactController.getUser(1L)).thenReturn(resp);
+        ResponseEntity<SpringReactResponse> res = springReactController.getUser(1L);
+        assertEquals(resp,res);
+    }
+
+    @Test
+    void update_Success(){
+        when(springReactController.updateUser(1L,springReactDto)).thenReturn(ResponseEntity.ok().body("Updated successfullyy"));
+        ResponseEntity<String> response = springReactController.updateUser(1L,springReactDto);
+        assertEquals(200,response.getStatusCodeValue());
+        assertEquals("Updated successfullyy",response.getBody());
     }
 
 }

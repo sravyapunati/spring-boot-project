@@ -34,12 +34,12 @@ public class SpringReactServiceImpl implements SpringReactService{
         entity.setLastName(springReactDto.getLastName());
         entity.setEmailId(springReactDto.getEmailId());
         entity.setMobile(springReactDto.getMobile());
+        entity.setDesignation(springReactDto.getDesignation());
         LocalDate currentDate = LocalDate.now();
         //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         entity.setCreatedDate(currentDate);
         if(springReactDao.existsByEmailId(springReactDto.getEmailId())){
             log.error("Email Id already exists");
-           // return ResponseEntity.status(HttpStatus.OK).body("Email Id already exists");
            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email Id already exists");
         }
         if(springReactDao.existsByMobile(springReactDto.getMobile())){
@@ -52,17 +52,16 @@ public class SpringReactServiceImpl implements SpringReactService{
     }
 
     @Override
-    public ResponseEntity<PaginationResult> getAllUsers(int startIndex, int endIndex, LocalDate createDate) {
+    public ResponseEntity<PaginationResult> getAllUsers(int startIndex, int endIndex) {
        // System.out.println("Page sizes startindex "+springReactDto.getStartIndex()+"endindex " +springReactDto.getEndIndex());
         PaginationResult pagination = new PaginationResult();
         List<SpringReactResponse> reactResponse = new ArrayList<>();
-     //   int pageSize = endIndex-startIndex;
         Pageable pageable = PageRequest.of(startIndex,endIndex);
 
         log.info("Page size"+startIndex,endIndex);
-        Page<SpringReactEntity> entity = springReactDao.findAllByCreatedDate(createDate,pageable);
-
+        Page<SpringReactEntity> entity = springReactDao.findAll(pageable);
         System.out.println("total size"+entity.getTotalElements());
+        
         List<SpringReactResponse> responses = null;
         if(entity!=null && !entity.isEmpty()){
             reactResponse = entity.stream().map(resp-> {
@@ -73,6 +72,7 @@ public class SpringReactServiceImpl implements SpringReactService{
                 response.setEmailId(resp.getEmailId());
                 response.setMobile(resp.getMobile());
                 response.setCreatedDate(resp.getCreatedDate());
+                response.setDesignation(resp.getDesignation());
                 return response;
             }).collect(Collectors.toList());
             pagination.setResponseList(reactResponse);
@@ -96,6 +96,7 @@ public class SpringReactServiceImpl implements SpringReactService{
             response.setMobile(entity.get().getMobile());
             response.setEmailId(entity.get().getEmailId());
             response.setCreatedDate(entity.get().getCreatedDate());
+            response.setDesignation(entity.get().getDesignation());
             return ResponseEntity.ok(response);
         }else {
             return ResponseEntity.notFound().build();
@@ -103,14 +104,14 @@ public class SpringReactServiceImpl implements SpringReactService{
     }
 
     @Override
-    public ResponseEntity<String> updateUsers(Long id,String firstName, String lastName) {
-       // SpringReactEntity entity = new SpringReactEntity();
+    public ResponseEntity<String> updateUsers(Long id,String firstName, String lastName, String designation) {
         Optional<SpringReactEntity> entity = springReactDao.findById(id);
         if (entity.isPresent()){
             entity.get().setFirstName(firstName);
             entity.get().setId(id);
             entity.get().setLastName(lastName);
             entity.get().setUpdatedDate(LocalDate.now());
+            entity.get().setDesignation(designation);
             springReactDao.save(entity.get());
             return ResponseEntity.status(HttpStatus.OK).body("Updated successfully");
         }else{

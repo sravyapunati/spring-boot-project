@@ -18,10 +18,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -50,6 +50,7 @@ public class SpringReactServiceImplTest {
         springReactDto.setMobile("1234567890");
         springReactDto.setStartIndex(0);
         springReactDto.setEndIndex(1);
+        springReactDto.setDesignation("SoftwareEngineer");
     }
 
     @Test
@@ -94,11 +95,12 @@ public class SpringReactServiceImplTest {
         entity.setEmailId("sravya26punati@gmail.com");
         entity.setMobile("99121211211");
         entity.setCreatedDate(date);
+        entity.setDesignation("Software Engineer");
         entityList.add(entity);
         Pageable page = PageRequest.of(0,10);
         Page<SpringReactEntity> pageList = new PageImpl<>(entityList);
-        when(springReactDao.findAllByCreatedDate(date,page)).thenReturn(pageList);
-        ResponseEntity<PaginationResult> resp = springReactServiceImpl.getAllUsers(0,10,date);
+        when(springReactDao.findAll(page)).thenReturn(pageList);
+        ResponseEntity<PaginationResult> resp = springReactServiceImpl.getAllUsers(springReactDto.getStartIndex(),springReactDto.getEndIndex());
         assertEquals(200,resp.getStatusCodeValue());
         assertEquals(1,resp.getBody().getTotalRecords());
         assertNotNull(resp);
@@ -110,8 +112,47 @@ public class SpringReactServiceImplTest {
         LocalDate date = LocalDate.now();
         Pageable page = PageRequest.of(0,10);
         Page pageInfo = new PageImpl(entityList);
-        when(springReactDao.findAllByCreatedDate(date,page)).thenReturn(pageInfo);
-        ResponseEntity<PaginationResult> resp = springReactServiceImpl.getAllUsers(0,10,date);
+        when(springReactDao.findAll(page)).thenReturn(pageInfo);
+        ResponseEntity<PaginationResult> resp = springReactServiceImpl.getAllUsers(springReactDto.getStartIndex(),springReactDto.getEndIndex());
         assertEquals(204,resp.getStatusCodeValue());
+    }
+
+    @Test
+    public void testUserGet_Onsuccess(){
+        SpringReactEntity entity = new SpringReactEntity();
+        when(springReactDao.existsById(1L)).thenReturn(true);
+        when(springReactDao.findById(1L)).thenReturn(Optional.of(entity));
+        ResponseEntity<SpringReactResponse> resp = springReactServiceImpl.getUser(1L);
+        assertNotNull(resp);
+        assertEquals(200,resp.getStatusCodeValue());
+    }
+
+    @Test
+    public void testUserGet_Onfailure(){
+        SpringReactEntity entity = new SpringReactEntity();
+        when(springReactDao.existsById(1L)).thenReturn(false);
+        when(springReactDao.findById(1L)).thenReturn(Optional.of(entity));
+        ResponseEntity<SpringReactResponse> resp = springReactServiceImpl.getUser(1L);
+        assertEquals(204,resp.getStatusCodeValue());
+    }
+
+    @Test
+    public void testUserUpdateon_Success(){
+        SpringReactEntity entity = new SpringReactEntity();
+        when(springReactDao.findById(1L)).thenReturn(Optional.of(entity));
+        Optional<SpringReactEntity> opt= springReactDao.findById(1L);
+        ResponseEntity<String> resp = springReactServiceImpl.updateUsers(1L,"sravya","punati","software");
+        assertEquals(200,resp.getStatusCodeValue());
+        assertEquals("Updated successfully",resp.getBody());
+        assertEquals(opt.isPresent(),true);
+    }
+
+    @Test
+    public void testUserUpdateon_Failure(){
+        SpringReactEntity entity = new SpringReactEntity();
+        Optional<SpringReactEntity> opt= springReactDao.findById(1L);
+        ResponseEntity<String> resp = springReactServiceImpl.updateUsers(1L,"sravya","punati","software");
+        assertEquals(204,resp.getStatusCodeValue());
+        assertEquals(opt.isPresent(),false);
     }
 }
