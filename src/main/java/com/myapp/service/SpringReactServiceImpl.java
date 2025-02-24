@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -56,12 +57,11 @@ public class SpringReactServiceImpl implements SpringReactService{
        // System.out.println("Page sizes startindex "+springReactDto.getStartIndex()+"endindex " +springReactDto.getEndIndex());
         PaginationResult pagination = new PaginationResult();
         List<SpringReactResponse> reactResponse = new ArrayList<>();
-        Pageable pageable = PageRequest.of(startIndex,endIndex);
-
-        log.info("Page size"+startIndex,endIndex);
+        Pageable pageable = PageRequest.of(startIndex,endIndex,Sort.by("id").descending());
+        log.info("Page size"+startIndex + endIndex);
         Page<SpringReactEntity> entity = springReactDao.findAll(pageable);
         System.out.println("total size"+entity.getTotalElements());
-        
+
         List<SpringReactResponse> responses = null;
         if(entity!=null && !entity.isEmpty()){
             reactResponse = entity.stream().map(resp-> {

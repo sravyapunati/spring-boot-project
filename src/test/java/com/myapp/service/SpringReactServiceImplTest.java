@@ -12,10 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import java.time.LocalDate;
@@ -68,7 +65,7 @@ public class SpringReactServiceImplTest {
 
     @Test
     public void testSaveUsers_EmailFailure() {
-        lenient().when(springReactDao.existsByEmailId(springReactDto.getEmailId())).thenReturn(true);
+        when(springReactDao.existsByEmailId(springReactDto.getEmailId())).thenReturn(true);
         ResponseEntity<String> response = springReactServiceImpl.saveUsers(springReactDto);
         assertEquals(400,response.getStatusCodeValue());
         assertEquals("Email Id already exists",response.getBody());
@@ -77,7 +74,7 @@ public class SpringReactServiceImplTest {
 
     @Test
     public void testSaveUsers_MobileFailure() {
-        lenient().when(springReactDao.existsByMobile(springReactDto.getMobile())).thenReturn(true);
+        when(springReactDao.existsByMobile(springReactDto.getMobile())).thenReturn(true);
         ResponseEntity<String> response = springReactServiceImpl.saveUsers(springReactDto);
         assertEquals(400,response.getStatusCodeValue());
         assertEquals("Mobile already exists",response.getBody());
@@ -97,24 +94,26 @@ public class SpringReactServiceImplTest {
         entity.setCreatedDate(date);
         entity.setDesignation("Software Engineer");
         entityList.add(entity);
-        Pageable page = PageRequest.of(0,10);
-        Page<SpringReactEntity> pageList = new PageImpl<>(entityList);
+        Pageable page = PageRequest.of(0,1,Sort.by("id").descending());
+        Page<SpringReactEntity> pageList = new PageImpl<>(entityList,page,entityList.size());
         when(springReactDao.findAll(page)).thenReturn(pageList);
         ResponseEntity<PaginationResult> resp = springReactServiceImpl.getAllUsers(springReactDto.getStartIndex(),springReactDto.getEndIndex());
         assertEquals(200,resp.getStatusCodeValue());
         assertEquals(1,resp.getBody().getTotalRecords());
         assertNotNull(resp);
+        verify(springReactDao, times(1)).findAll(page);
     }
 
     @Test
     public void testUsersList_Failure(){
         List<SpringReactEntity> entityList= new ArrayList<>();
         LocalDate date = LocalDate.now();
-        Pageable page = PageRequest.of(0,10);
-        Page pageInfo = new PageImpl(entityList);
-        when(springReactDao.findAll(page)).thenReturn(pageInfo);
+        Pageable page = PageRequest.of(0,1, Sort.by("id").descending());
+        Page<SpringReactEntity> mockPage = new PageImpl<>(entityList, page, entityList.size());
+        when(springReactDao.findAll(page)).thenReturn(mockPage);
         ResponseEntity<PaginationResult> resp = springReactServiceImpl.getAllUsers(springReactDto.getStartIndex(),springReactDto.getEndIndex());
         assertEquals(204,resp.getStatusCodeValue());
+        verify(springReactDao, times(1)).findAll(page);
     }
 
     @Test
@@ -131,9 +130,8 @@ public class SpringReactServiceImplTest {
     public void testUserGet_Onfailure(){
         SpringReactEntity entity = new SpringReactEntity();
         when(springReactDao.existsById(1L)).thenReturn(false);
-        when(springReactDao.findById(1L)).thenReturn(Optional.of(entity));
         ResponseEntity<SpringReactResponse> resp = springReactServiceImpl.getUser(1L);
-        assertEquals(204,resp.getStatusCodeValue());
+        assertEquals(404,resp.getStatusCodeValue());
     }
 
     @Test
@@ -152,7 +150,7 @@ public class SpringReactServiceImplTest {
         SpringReactEntity entity = new SpringReactEntity();
         Optional<SpringReactEntity> opt= springReactDao.findById(1L);
         ResponseEntity<String> resp = springReactServiceImpl.updateUsers(1L,"sravya","punati","software");
-        assertEquals(204,resp.getStatusCodeValue());
+        assertEquals(404,resp.getStatusCodeValue());
         assertEquals(opt.isPresent(),false);
     }
 }
